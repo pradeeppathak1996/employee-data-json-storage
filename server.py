@@ -41,6 +41,8 @@ def add_employee():
     
     return jsonify({"message": "Employee added successfully"}), 201
 
+# Perform CRUD -------------------------------------------------------------
+
 @app.route('/employees', methods=['GET'])
 def get_all_employees():
     employees_even = load_data(EVEN_FILE)
