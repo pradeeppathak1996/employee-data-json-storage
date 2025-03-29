@@ -41,8 +41,6 @@ def add_employee():
     
     return jsonify({"message": "Employee added successfully"}), 201
 
-# GET all----------------------------------------------------------------------------------
-
 @app.route('/employees', methods=['GET'])
 def get_all_employees():
     employees_even = load_data(EVEN_FILE)
@@ -50,8 +48,6 @@ def get_all_employees():
 
     all_employees = employees_even + employees_odd
     return jsonify(all_employees), 200
-
-# GET by id-------------------------------------------------------------------------------
 
 @app.route('/employee/<int:employee_id>', methods=['GET'])
 def get_employee_by_id(employee_id):
@@ -61,17 +57,14 @@ def get_employee_by_id(employee_id):
     for emp in employees_even + employees_odd:
         if emp["Employee ID"] == employee_id:
             return jsonify(emp), 200
-    
+        
     return jsonify({"error": "Employee not found"}), 404
-
-# DELETE by id ---------------------------------------------------------------------------------
 
 @app.route('/del_employee/<int:employee_id>', methods=['DELETE'])
 def delete_employee(employee_id):
     employees_even = load_data(EVEN_FILE)
     employees_odd = load_data(ODD_FILE)
 
-    # Check if employee exists
     for emp in employees_even:
         if int(emp["Employee ID"]) == employee_id:
             employees_even.remove(emp)
@@ -83,6 +76,25 @@ def delete_employee(employee_id):
             employees_odd.remove(emp)
             save_data(ODD_FILE, employees_odd)
             return jsonify({"message": "Employee deleted successfully"}), 200
+
+    return jsonify({"error": "Employee not found"}), 404
+
+@app.route('/update_employee/<int:employee_id>', methods=['PUT'])
+def update_employee(employee_id):
+    employees_even = load_data(EVEN_FILE)
+    employees_odd = load_data(ODD_FILE)
+
+    for emp in employees_even:
+        if int(emp["Employee ID"]) == employee_id:
+            emp.update(request.json)
+            save_data(EVEN_FILE, employees_even)
+            return jsonify({"message": "Employee updated successfully"}), 200
+
+    for emp in employees_odd:
+        if int(emp["Employee ID"]) == employee_id:
+            emp.update(request.json)
+            save_data(ODD_FILE, employees_odd)
+            return jsonify({"message": "Employee updated successfully"}), 200
 
     return jsonify({"error": "Employee not found"}), 404
 
